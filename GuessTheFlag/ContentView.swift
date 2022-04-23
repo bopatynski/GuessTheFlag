@@ -13,20 +13,38 @@ struct ContentView: View {
     @State private var showingScore = false
     @State private var scoreTitle = ""
     @State private var score = 0
+    @State private var currentRound = 0
+    @State private var roundDone = false
+    
     func askQuestion() {
         countries.shuffle()
         correctAnswer = Int.random(in: 0...2)
     }
+    
+    func resetRound() {
+        currentRound = 0
+        score = 0
+        
+        askQuestion()
+    }
+    
     func flagTapped(_ number: Int) {
-        if number == correctAnswer {
-            scoreTitle = "Correct"
-            score = score + 1
-        } else {
-            scoreTitle = "Wrong"
-        }
+        if currentRound < 7 {
+            if number == correctAnswer {
+                        scoreTitle = "Correct"
+                        score = score + 1
+                    } else {
+                        scoreTitle = "Wrong that's the flag of \(countries[number])"
+            }
 
         showingScore = true
+        currentRound += 1
+        } else {
+            roundDone = true
+        }
     }
+    
+
     
     var body: some View {
         
@@ -82,6 +100,16 @@ struct ContentView: View {
         } message: {
             Text("Your score is \(score)")
         }
+        
+        .alert("End of round", isPresented: $roundDone) {
+            Button("Restart", action: resetRound)
+
+        } message: {
+            Text("Your total score is \(score)")
+        }
+        
+            
+        
     }
 }
 
